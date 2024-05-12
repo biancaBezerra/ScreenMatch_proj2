@@ -117,7 +117,7 @@ public class Serie {
                 ", \nGenero: '" + genero + '\'' +
                 ", \nAtores: '" + atores + '\'' +
                 ", \nPoster: '" + poster + '\'' +
-                ", \nSinopse: '" + sinopse + '\'' +
-                ", \nEpisódios: '" + episodios + '\'' + "\n";
+                ", \nSinopse: '" + sinopse + '\'' ;
+//                ", \nEpisódios: '" + episodios + '\'' + "\n";
     }
 }

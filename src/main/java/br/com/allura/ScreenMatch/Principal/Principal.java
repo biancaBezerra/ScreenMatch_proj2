@@ -24,6 +24,7 @@ public class Principal {
     private SerieRepository repository;
 
     private List<Serie> series = new ArrayList<>();
+    private Optional<Serie> serieBuscada;
     public Principal(SerieRepository repository) {
         this.repository = repository;
     }
@@ -45,6 +46,9 @@ public class Principal {
                     6 - Top 5 Series
                     7 - Buscar séries por categoria
                     8 - Filtrar séries
+                    9 - Buscar episódios por trecho do titulo
+                    10 - Top 5 Episodios
+                    11 - Buscar Episodios a partir de uma data
                     0 - Sair                                 
                     """;
 
@@ -77,6 +81,15 @@ public class Principal {
                 case 8:
                     filtrarSeriesPorTemporadaEAvaliacao();
                     break;
+                case 9:
+                    buscarEpisodioPorTrecho();
+                    break;
+                case 10:
+                    topEpisodiosPorSerie();
+                    break;
+                case 11:
+                    buscarEpPorData();
+                    break;
                 case 0:
                     System.out.println("Saindo...");
                     break;
@@ -85,6 +98,7 @@ public class Principal {
             }
         }
     }
+
 
 
     private void buscarSerieWeb() {
@@ -140,7 +154,7 @@ public class Principal {
     private void buscarSeriePorTitulo() {
         System.out.println("Digite um trecho do nome da série para busca");
         String nomeSerie = leitura.nextLine();
-        Optional<Serie> serieBuscada = repository.findByTituloContainingIgnoreCase(nomeSerie);
+        serieBuscada = repository.findByTituloContainingIgnoreCase(nomeSerie);
 
         if (serieBuscada.isPresent()){
             System.out.println("Informações da série: " + serieBuscada.get());
@@ -187,10 +201,45 @@ public class Principal {
         System.out.println("Com avaliação a partir de que valor? ");
         var avaliacao = leitura.nextDouble();
         leitura.nextLine();
-        List<Serie> filtroSeries = repository.findByTotalTemporadasLessThanEqualAndAvaliacaoGreaterThanEqual(totalTemporadas, avaliacao);
+        List<Serie> filtroSeries = repository.seriesPorTemporadaAvaliacao(totalTemporadas,avaliacao);
         System.out.println("*** Séries filtradas ***");
         filtroSeries.forEach(s ->
                 System.out.println(s.getTitulo() + "  - avaliação: " + s.getAvaliacao()));
+    }
+
+    private void buscarEpisodioPorTrecho() {
+        System.out.println("Digite o trecho que algum epísódio que deseja buscar: ");
+        String trechoEpisodio = leitura.nextLine();
+        List<Episodio> episodiosFiltrados =repository.episodiosPorTrecho(trechoEpisodio);
+        episodiosFiltrados.forEach(e ->
+                System.out.printf("Série: %s Temporada: %s - Episódio: %s - %s\n",
+                        e.getSerie().getTitulo(), e.getTemporada(),
+                        e.getNumeroEpisodio(), e.getTitulo()));
+    }
+
+
+    private void topEpisodiosPorSerie() {
+        buscarSeriePorTitulo();
+        if (serieBuscada.isPresent()){
+            Serie serie = serieBuscada.get();
+            List<Episodio> topEpisodios = repository.topEpisodiosPorSerie(serie);
+            topEpisodios.forEach(e ->
+                    System.out.printf("Série: %s Temporada: %s - Episódio: %s - %s - Avaliação: %s\n",
+                            e.getSerie().getTitulo(), e.getTemporada(),
+                            e.getNumeroEpisodio(), e.getTitulo(), e.getAvaliacao()));
+        }
+    }
+
+    private void buscarEpPorData() {
+        buscarSeriePorTitulo();
+        if (serieBuscada.isPresent()){
+            Serie serie = serieBuscada.get();
+            System.out.println("Digite o ano limite de lançamento: ");
+            int anoLancamento = leitura.nextInt();
+            leitura.nextLine();
+            List<Episodio> episodiosAno = repository.episodiosPorSerieAno(serie, anoLancamento);
+            episodiosAno.forEach(System.out::println);
+        }
     }
 
 
