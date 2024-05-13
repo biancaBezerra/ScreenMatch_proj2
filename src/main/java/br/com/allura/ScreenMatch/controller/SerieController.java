@@ -1,35 +1,41 @@
 package br.com.allura.ScreenMatch.controller;
 
 import br.com.allura.ScreenMatch.dto.SerieDto;
-import br.com.allura.ScreenMatch.model.Serie;
-import br.com.allura.ScreenMatch.repository.SerieRepository;
+import br.com.allura.ScreenMatch.service.SerieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/series")
 public class SerieController {
 
     @Autowired
-    private SerieRepository repository;
+    private SerieService servico;
 
-    @GetMapping("/series")
+    @GetMapping
     public List<SerieDto> obterSeries() {
-
-        return repository.findAll()
-                .stream()
-                .map(s -> new SerieDto(s.getId(), s.getTitulo(), s.getTotalTemporadas(), s.getAvaliacao(), s.getGenero(), s.getAtores(), s.getPoster(), s.getSinopse()))
-                .collect(Collectors.toList());
-
-
+        return servico.obterTodasAsSeries();
     }
 
-    @GetMapping("/inicio")
-    public String retornaInicio(){
-        return "Bem vindo ao Screen Match!";
+    @GetMapping("/top5")
+    public List<SerieDto> obterTop5Series(){
+        return servico.obterTop5Series();
+    }
+
+    @GetMapping("/lancamentos")
+    public List<SerieDto> obterLancamentos(){
+
+        return servico.obterLancamentos();
+    }
+
+    @GetMapping("/{id}")
+    public SerieDto obterPorId(@PathVariable Long id){
+        return servico.obterPorId(id);
     }
 
 }
