@@ -13,23 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
-public class ScreenMatchApplication implements CommandLineRunner {
-
-	@Autowired
-	private SerieRepository repository;
+public class ScreenMatchApplication{
 
 	public static void main(String[] args) {
 		
 		SpringApplication.run(ScreenMatchApplication.class, args);
 	}
 
-	@Override
-	public void run(String... args) throws Exception{
-//		Exemplos exemplos = new Exemplos();
-//		exemplos.exibeExemplo();
-
-		Principal principal = new Principal(repository);
-		principal.exibeMenu();
-
-	}
 }
